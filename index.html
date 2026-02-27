@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Festus AI | Intelligence Core</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    :root {
+      --primary-glow: #a855f7;
+      --secondary-glow: #22c55e;
+      --tertiary-glow: #f43f5e;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #050505;
+      color: #ffffff;
+      margin: 0;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Neon Aurora Mesh Background */
+    .mesh-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-color: #050505;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(270, 70%, 15%, 1) 0, transparent 50%), 
+        radial-gradient(at 100% 0%, hsla(140, 70%, 15%, 1) 0, transparent 50%), 
+        radial-gradient(at 50% 50%, hsla(330, 70%, 10%, 1) 0, transparent 50%), 
+        radial-gradient(at 0% 100%, hsla(200, 70%, 15%, 1) 0, transparent 50%), 
+        radial-gradient(at 100% 100%, hsla(40, 70%, 15%, 1) 0, transparent 50%);
+    }
+
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(40px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .prismatic-text {
+      background: linear-gradient(to right, #d8b4fe, #86efac, #fda4af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .shining-border {
+      position: relative;
+    }
+    .shining-border::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(45deg, transparent, rgba(168, 85, 247, 0.3), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #050505;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #preloader.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(.33); }
+      80%, 100% { opacity: 0; }
+    }
+
+    .ring-animation {
+      animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react-dom": "https://esm.sh/react-dom@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div class="mesh-bg"></div>
+  <div id="preloader">
+    <div class="relative flex items-center justify-center">
+      <div class="absolute w-24 h-24 border-2 border-purple-500/20 rounded-full ring-animation"></div>
+      <div class="w-16 h-16 border-2 border-t-transparent border-purple-400 rounded-full animate-spin"></div>
+    </div>
+  </div>
+  <div id="root"></div>
+  <script type="module" src="index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

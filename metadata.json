@@ -1,0 +1,9 @@
+{
+  "name": "Festus AI",
+  "description": "An ultra-modern, high-fidelity AI assistant featuring a vibrant shiny interface, real-time reasoning, and multi-modal intelligence.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ]
+}
