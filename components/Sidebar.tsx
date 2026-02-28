@@ -39,6 +39,16 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
+      <div className="p-6 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <i className="fa-solid fa-bolt text-white"></i>
+        </div>
+        <div className="flex flex-col">
+          <h1 className="text-lg font-black text-white tracking-tighter leading-none">Festus AI</h1>
+          <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1">Pro Edition</span>
+        </div>
+      </div>
+
       <div className="p-3 flex flex-col gap-1">
         {menuItems.map(item => (
           <button

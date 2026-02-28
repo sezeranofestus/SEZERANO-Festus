@@ -142,8 +142,8 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
       <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-cyan-400 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-indigo-500/20">
         <i className="fa-solid fa-bolt text-3xl text-white"></i>
       </div>
-      <h2 className="text-4xl font-black text-white tracking-tighter mb-2">Festus AI</h2>
-      <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">Security Matrix Entry</p>
+      <h2 className="text-4xl font-black text-white tracking-tighter mb-2">Festus AI Pro</h2>
+      <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">Advanced Multimodal Matrix</p>
     </div>
   );
 

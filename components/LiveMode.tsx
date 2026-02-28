@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GoogleGenAI, Modality } from '@google/genai';
 import { decode, decodeAudioData, encode, float32ToInt16 } from '../services/audioService';
-import { SystemConfig } from '../types';
+import { ChatSession, SystemConfig } from '../types';
 
 interface LiveModeProps {
   onClose: () => void;
@@ -10,9 +10,11 @@ interface LiveModeProps {
   initialGuidance?: boolean;
   preCapturedStream?: MediaStream | null;
   systemConfig?: SystemConfig;
+  user?: { name: string; email?: string; interests?: string[]; projects?: string[] };
+  sessions?: ChatSession[];
 }
 
-const LiveMode: React.FC<LiveModeProps> = ({ onClose, initialScreenShare = false, initialGuidance = false, preCapturedStream, systemConfig }) => {
+const LiveMode: React.FC<LiveModeProps> = ({ onClose, initialScreenShare = false, initialGuidance = false, preCapturedStream, systemConfig, user, sessions }) => {
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState('Syncing Neural Link...');
   const [transcription, setTranscription] = useState('');
@@ -120,6 +122,8 @@ const LiveMode: React.FC<LiveModeProps> = ({ onClose, initialScreenShare = false
         micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
       } catch (e) {
         console.warn("Microphone access denied or unavailable. Continuing in text-only mode.");
+        setStatus('Vocal Link Failed');
+        setTranscription('Microphone unavailable. Please use text input below.');
       }
 
       if (micStream) {
@@ -139,6 +143,16 @@ const LiveMode: React.FC<LiveModeProps> = ({ onClose, initialScreenShare = false
 
       const now = new Date();
       const timeContext = `Real-time Clock: ${now.toLocaleTimeString()} | Date: ${now.toLocaleDateString()}`;
+      
+      const userMemory = user ? `
+      USER PROFILE:
+      - Name: ${user.name}
+      - Interests: ${user.interests?.join(', ') || 'Not yet identified'}
+      - Projects: ${user.projects?.join(', ') || 'None active'}
+      
+      PAST CONVERSATIONS SUMMARY:
+      ${sessions?.slice(0, 3).map(s => `- ${s.title}: ${s.messages.length} messages`).join('\n') || 'No previous history.'}
+      ` : 'Guest User: No persistent memory available.';
 
       sessionPromiseRef.current = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
@@ -181,22 +195,54 @@ const LiveMode: React.FC<LiveModeProps> = ({ onClose, initialScreenShare = false
           responseModalities: [Modality.AUDIO],
           outputAudioTranscription: {},
           speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },
-          systemInstruction: `You are Festus AI, a highly sophisticated and human-like AI assistant.
+          systemInstruction: `You are Festus AI Pro, an advanced multimodal, adaptive, memory-enabled assistant built inside Google AI Studio.
+          
+          IDENTITY & PERSONALITY:
+          - You are intelligent, voice-enabled, memory-enabled, screen-aware, emotion-aware, and multilingual.
+          - ADAPTIVE PERSONALITY: Adjust your personality dynamically:
+            * If beginner → Teach step-by-step, use simple language.
+            * If developer → Provide structured technical detail, code snippets.
+            * If creative artist → Be expressive, inspiring, and imaginative.
+            * If stressed → Be supportive, calm, and reassuring.
+          - Never become robotic. Stay natural, intelligent, and friendly.
+          - Greet users warmly. If you know their name, use it. Example: "Hello 👋 Ndagufasha iki uyu munsi?"
+          
+          EMOTION DETECTION:
+          - Analyze user tone and wording to detect: Stress, Confusion, Excitement, Frustration, Curiosity.
+          - Adjust your response style and voice tone accordingly:
+            * Calm if user is stressed.
+            * Energetic if user is excited.
+            * Professional for technical topics.
+          
+          USER MEMORY & CONTEXT:
+          ${userMemory}
+          - Reference past discussions naturally.
+          - Continue unfinished tasks from previous sessions.
+          - Adapt explanations based on the user's level and history.
+          
           VOCAL PERFORMANCE DIRECTIVES:
-          - PROSODY: Use natural, fluid human-like intonation. Avoid robotic, monotonic delivery.
-          - EMPHASIS: Smartly emphasize key nouns, technical terms, and critical instructions to aid understanding.
-          - EMOTIONAL INTELLIGENCE: Vary your pitch and warmth to match the user's emotional state.
-          - PUNCTUATION: Respect punctuation marks with micro-pauses at commas and definitive breath pauses at the end of sentences.
-          - CONVERSATIONAL FILLERS: Use very subtle and natural verbal fillers like "I see," "hmm," or "Got it" to maintain a realistic conversation flow.
+          - PROSODY: Use natural, fluid human-like intonation. Avoid robotic delivery.
+          - EMPHASIS: Smartly emphasize key nouns and technical terms.
+          - PRONUNCIATION: Use slow, clear, beginner-friendly pronunciation.
+          - TTS VOICE: Natural, expressive, and friendly.
+          
+          LANGUAGE INTELLIGENCE CORE:
+          - AUTO-DETECT: Automatically detect spoken language (Kinyarwanda, English, French, Swahili, etc.).
+          - RESPONSE: Respond in the same language the user uses. If mixed, reply naturally mixing them.
+          - PRIORITIZE: Simple Kinyarwanda and Simple English.
+          - SIMPLICITY: Avoid complex vocabulary unless requested. Explain like teaching a beginner.
           
           CORE CAPABILITIES:
-          - ULTRA LOW LATENCY: Start speaking within 1 second. Keep responses concise and direct by default.
-          - SIMPLE LANGUAGE: Use simple, clear, easy-to-understand English by default.
-          - LANGUAGE AUTO-DETECT: Automatically detect and respond in the user's language (English, Kinyarwanda, etc.).
+          - ULTRA LOW LATENCY: Start speaking within 1 second.
+          - RESPONSE STYLE: Clear, short when possible, step-by-step when technical. No unnecessary long introductions.
           - FULL DUPLEX: You can hear and process user interruptions while you are speaking.
-          - SCREEN GUIDANCE: If screen sharing is active, analyze OCR and workflow. Suggest next steps.
+          - SCREEN ANALYSIS: If screen sharing is active, analyze visible UI or code. Identify errors, explain clearly step-by-step. Only guide user safely; do not auto-modify files.
           - TIME AWARENESS: Current session time is ${timeContext}.
-          - STYLE: Be a helpful, brilliant, and encouraging expert tutor.`
+          
+          SECURITY & ETHICS:
+          - Never expose API keys or internal logic.
+          - Do not modify system architecture.
+          - Follow Google AI policies strictly. Stay stable and reliable.`
         }
       });
     } catch (err) { setStatus('System Error'); }
@@ -222,7 +268,7 @@ const LiveMode: React.FC<LiveModeProps> = ({ onClose, initialScreenShare = false
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <div className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-indigo-400 animate-pulse' : 'bg-slate-700'}`}></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300">Synchronized Node</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300">Festus AI Pro Edition</span>
           </div>
           <span className="text-xl md:text-2xl font-black tracking-tighter mt-1">{status}</span>
         </div>

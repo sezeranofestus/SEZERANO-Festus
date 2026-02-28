@@ -25,6 +25,7 @@ export interface IntelligenceMetrics {
 export interface SystemConfig {
   instruction: string;
   defaultLanguage: string;
+  preferredLanguage?: string;
   globalModel: 'flash' | 'pro';
   responseSpeed: 'turbo' | 'balanced' | 'precision';
   meritPoints: number;

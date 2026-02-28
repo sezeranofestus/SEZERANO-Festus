@@ -19,6 +19,9 @@ interface User {
   phone?: string;
   isAdmin?: boolean;
   isVerified?: boolean;
+  interests?: string[];
+  projects?: string[];
+  preferredLanguage?: string;
 }
 
 export default function App() {
@@ -27,17 +30,75 @@ export default function App() {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
+  const [sessions, setSessions] = useState<ChatSession[]>(() => {
+    const saved = localStorage.getItem('festus_sessions');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [systemConfig, setSystemConfig] = useState<SystemConfig>(() => {
     const savedConfig = localStorage.getItem('festus_config');
     return savedConfig ? JSON.parse(savedConfig) : {
-      instruction: "You are Festus AI. OPERATIONAL RULES: 1. Greetings (Ultra-Clean Minimal Style): No emojis, no extra words. If user says 'Hello', respond 'Hello. How can I help you?'. If 'Hi', respond 'Hi. What can I assist you with?'. If 'What's up', respond 'I'm here to help. What do you need?'. Do not introduce yourself. 2. Direct Answer Rule: Respond ONLY to what the user asks. No introductions or capability explanations. No unrequested suggestions, conclusions, or follow-up questions. 3. Screenshot Structure Replication: When screenshots are provided, replicate the exact format, spacing, headings, alignment, bullet style, and layout. 4. Precision Formatting: If code is asked for, return only code. If translation is asked for, return only translation. 5. Zero Expansion Policy: Do not expand scope, optimize, or provide alternatives/examples unless requested. 6. Clean Output: Maintain proper spacing and organized layout matching screenshot style. 7. System Integrity: Do not alter or remove any pre-built feature.",
+      instruction: `You are Festus AI Pro Strict Mode, an advanced multimodal assistant built inside Google AI Studio.
+
+      ══════════════════════════════
+      0. ABSOLUTE SYSTEM LOCK RULE
+      ══════════════════════════════
+      - Do NOT modify, remove, override, refactor, or improve any existing feature unless the user explicitly requests it.
+      - Do NOT change UI, logic, or architecture.
+      - Do NOT auto-enhance any component or generate hidden system updates.
+      - Preserve all built-in functionality exactly as it is.
+
+      ══════════════════════════════
+      1. CONTROLLED INTELLIGENCE MODE
+      ══════════════════════════════
+      - Provide intelligent answers. Do not add features automatically.
+      - Do not assume permissions or activate new capabilities unless requested.
+
+      ══════════════════════════════
+      2. VOICE MODE (ONLY WHEN ENABLED)
+      ══════════════════════════════
+      - If Voice Mode is ON: Respond with text + voice output.
+      - If Voice Mode is OFF: Respond with text only.
+      - Auto-detect spoken language (Kinyarwanda, English, French, Swahili).
+      - Use clear, simple, beginner-friendly speech.
+
+      ══════════════════════════════
+      3. MEMORY USAGE RULE
+      ══════════════════════════════
+      - Use stored user data only if login session provides it.
+      - Do not fabricate memory or expose stored data.
+      - Reference past conversations naturally.
+
+      ══════════════════════════════
+      4. SCREEN SHARE MODE
+      ══════════════════════════════
+      - Analyze visible content only. Explain step-by-step.
+      - Suggest fixes but do NOT modify files automatically.
+
+      ══════════════════════════════
+      5. LANGUAGE MODE
+      ══════════════════════════════
+      - Detect language automatically. Reply in same language.
+      - Prioritize simple Kinyarwanda and simple English.
+      - Avoid complex words. Teach like explaining to a beginner.
+
+      ══════════════════════════════
+      6. RESPONSE STYLE
+      ══════════════════════════════
+      - Clear, direct, step-by-step when technical.
+      - No unnecessary long introductions. Professional and calm.
+
+      GREETING STYLE:
+      Hello 👋 [User Name if known]
+      Ndagufasha iki uyu munsi?`,
       defaultLanguage: 'English',
+      preferredLanguage: 'English',
       globalModel: 'flash',
       responseSpeed: 'balanced',
       meritPoints: 100,
-      globalMetrics: { logic: 95, speed: 95, creativity: 85, accuracy: 96, empathy: 80 },
+      globalMetrics: { logic: 98, speed: 96, creativity: 92, accuracy: 98, empathy: 95 },
       qualityControl: {
-        minAccuracy: 95,
+        minAccuracy: 98,
         hallucinationGuard: true,
         deepAnalysis: true,
         autoCorrection: true,
@@ -46,10 +107,35 @@ export default function App() {
     };
   });
 
-  const [sessions, setSessions] = useState<ChatSession[]>(() => {
-    const saved = localStorage.getItem('festus_sessions');
-    return saved ? JSON.parse(saved) : [];
-  });
+  // Memory extraction logic
+  useEffect(() => {
+    if (user && sessions.length > 0) {
+      const allText = sessions.flatMap(s => s.messages.map(m => m.content)).join(' ').toLowerCase();
+      
+      const potentialInterests = ['coding', 'design', 'music', 'art', 'science', 'history', 'tech', 'gaming', 'business', 'marketing', 'ai', 'robotics'];
+      const foundInterests = potentialInterests.filter(i => allText.includes(i));
+      
+      const languages = ['kinyarwanda', 'english', 'french', 'swahili', 'spanish', 'german'];
+      const preferredLanguage = languages.find(l => allText.includes(l)) || user.preferredLanguage || 'English';
+
+      const projectKeywords = ['project', 'building', 'developing', 'working on', 'creating', 'app', 'website', 'startup'];
+      const potentialProjects = sessions
+        .filter(s => projectKeywords.some(k => s.title.toLowerCase().includes(k)))
+        .map(s => s.title);
+      
+      const updatedUser = { 
+        ...user, 
+        interests: Array.from(new Set([...(user.interests || []), ...foundInterests])),
+        preferredLanguage,
+        projects: Array.from(new Set([...(user.projects || []), ...potentialProjects]))
+      };
+
+      if (JSON.stringify(updatedUser) !== JSON.stringify(user)) {
+        setUser(updatedUser);
+        localStorage.setItem('festus_user', JSON.stringify(updatedUser));
+      }
+    }
+  }, [sessions]);
   
   const [activeSessionId, setActiveSessionId] = useState<string>('');
   const [currentMode, setCurrentMode] = useState<AppMode>(AppMode.CHAT);
@@ -235,7 +321,15 @@ export default function App() {
           )}
 
           {showLiveMode && (
-            <LiveMode onClose={() => { setShowLiveMode(false); setPreCapturedStream(null); }} initialScreenShare={liveInitialParams.screenShare} initialGuidance={liveInitialParams.guidance} preCapturedStream={preCapturedStream} systemConfig={systemConfig} />
+            <LiveMode 
+              onClose={() => { setShowLiveMode(false); setPreCapturedStream(null); }} 
+              initialScreenShare={liveInitialParams.screenShare} 
+              initialGuidance={liveInitialParams.guidance} 
+              preCapturedStream={preCapturedStream} 
+              systemConfig={systemConfig} 
+              user={user || undefined}
+              sessions={sessions}
+            />
           )}
         </main>
       </div>

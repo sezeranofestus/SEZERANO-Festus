@@ -257,8 +257,8 @@ const StudioLab: React.FC<StudioLabProps> = ({ mode }) => {
           <div className="text-center space-y-6">
             <div className="w-20 h-20 rounded-[2rem] bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto"><i className="fa-solid fa-wand-sparkles text-2xl text-indigo-400"></i></div>
             <div>
-              <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Neural Studio Lab</h2>
-              <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-2">Professional Synthesis Hub</p>
+              <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Neural Studio Lab Pro</h2>
+              <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-2">Advanced Synthesis & Forge Hub</p>
             </div>
           </div>
         ) : (

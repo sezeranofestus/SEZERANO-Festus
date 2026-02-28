@@ -49,7 +49,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isTyping }) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-                    {msg.role === 'assistant' ? 'Assistant' : 'User'}
+                    {msg.role === 'assistant' ? 'Festus AI Pro' : 'User'}
                   </p>
                 </div>
 

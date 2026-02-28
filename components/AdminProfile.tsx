@@ -75,7 +75,7 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ onClose, isAdmin }) => {
             </div>
             
             <h2 className="text-2xl font-black text-white tracking-tight mb-2">Sezerano Festus</h2>
-            <p className="text-indigo-400 text-xs font-black uppercase tracking-[0.2em] mb-6">System Administrator</p>
+            <p className="text-indigo-400 text-xs font-black uppercase tracking-[0.2em] mb-6">Festus AI Pro Architect</p>
             
             <div className="w-full space-y-4 text-left">
               <div className="p-4 bg-white/5 rounded-2xl border border-white/5">

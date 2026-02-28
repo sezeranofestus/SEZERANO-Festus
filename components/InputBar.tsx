@@ -141,7 +141,7 @@ const InputBar: React.FC<InputBarProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Message Festus AI..."
+              placeholder="Message Festus AI Pro..."
               className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-slate-500 py-3.5 md:py-4 px-3 md:px-4 outline-none text-[15px] md:text-[16px] resize-none overflow-y-auto leading-relaxed"
             />
 

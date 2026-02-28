@@ -307,9 +307,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ systemConfig, onUpdateC
 
             <div className="p-8 md:p-12 bg-indigo-600/5 border border-indigo-500/10 rounded-[3rem] text-center max-w-4xl mx-auto">
                <i className="fa-solid fa-certificate text-indigo-400 text-4xl mb-6"></i>
-               <h4 className="text-2xl font-black text-white uppercase tracking-tighter mb-4">Festus Excellence Certified</h4>
+               <h4 className="text-2xl font-black text-white uppercase tracking-tighter mb-4">Festus AI Pro Certified</h4>
                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest leading-loose">
-                 Festus AI strictly adheres to ultra-high quality response standards. Every neural output is filtered through a 7-stage analytical trace to ensure absolute logical consistency and factual integrity.
+                 Festus AI Pro strictly adheres to ultra-high quality response standards. Every neural output is filtered through a 7-stage analytical trace to ensure absolute logical consistency and factual integrity.
                </p>
             </div>
           </div>
