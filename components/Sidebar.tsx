@@ -44,8 +44,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           <i className="fa-solid fa-bolt text-white"></i>
         </div>
         <div className="flex flex-col">
-          <h1 className="text-lg font-black text-white tracking-tighter leading-none">Festus AI</h1>
-          <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1">Pro Edition</span>
+          <h1 className="text-lg font-black text-white tracking-tighter leading-none uppercase">Festus AI</h1>
+          <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1">Ultra Intelligence Engine</span>
         </div>
       </div>
 
@@ -87,6 +87,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <i className="fa-solid fa-microphone-lines w-5 text-center"></i> 
             <span>Voice Sync</span>
+          </button>
+          <button 
+            onClick={() => onNewChat(AppMode.LIVE, { screenShare: true, guidance: true })}
+            className="w-full flex items-center gap-3 px-3 py-2 text-[13px] text-slate-400 hover:text-white transition-colors"
+          >
+            <i className="fa-solid fa-desktop w-5 text-center"></i> 
+            <span>Screen Guidance</span>
           </button>
       </div>
 
