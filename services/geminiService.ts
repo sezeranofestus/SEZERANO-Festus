@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { SystemConfig } from "../types";
 
-const genAI = new GoogleGenAI({ apiKey: "AIzaSyAR49f6T9cfgIZa4o_1ZM1_rjCdMSUBy1c" });
+const genAI = new GoogleGenAI({ apiKey: "AIzaSyBBvYLBmDtSpWBLNKyVlqtQLVmDq_xDQIw" });
 
 export const models = {
   flash: 'gemini-3-flash-preview',
