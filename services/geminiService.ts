@@ -57,7 +57,7 @@ export async function* streamChat(
   mode: string = 'CHAT', 
   systemConfig: SystemConfig
 ) {
-  const ai = getAI();
+  const ai = genAI;
   const modelToUse = systemConfig.globalModel === 'pro' ? models.pro : models.flash;
   const taskKey = `chat-${message.slice(0, 30)}`;
 
@@ -102,7 +102,7 @@ export async function generateImage(
   options: { aspectRatio?: "1:1" | "4:3" | "16:9" | "9:16", imageSize?: "1K" | "2K" | "4K", negativePrompt?: string } = {}
 ) {
   if (!prompt) throw new Error("Prompt required.");
-  const ai = getAI();
+  const ai = genAI;
   return callWithStability(`gen-${prompt.slice(0, 20)}`, async () => {
     const isPro = options.imageSize === "2K" || options.imageSize === "4K";
     const model = isPro ? models.proImage : models.image;
@@ -138,7 +138,7 @@ export async function proEditImage(
   instruction: string,
   parameters: any = {}
 ) {
-  const ai = getAI();
+  const ai = genAI;
   const taskKey = `pro-edit-${instruction.slice(0, 20)}`;
 
   const editingProtocol = `
@@ -177,7 +177,7 @@ export async function editImage(base64: string, mime: string, prompt: string, op
 }
 
 export async function analyzeImage(prompt: string, base64Image: string, mimeType: string, systemConfig: SystemConfig) {
-  const ai = getAI();
+  const ai = genAI;
   return callWithStability(`vision-${prompt.slice(0, 20)}`, async () => {
     const response = await ai.models.generateContent({
       model: models.flash,
