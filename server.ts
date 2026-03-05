@@ -27,7 +27,9 @@ const transporter = nodemailer.createTransport({
 // Verify connection configuration
 transporter.verify(function (error, success) {
   if (error) {
-    console.error('[EMAIL SETUP ERROR]', error);
+    console.error('[EMAIL SETUP ERROR] Authentication failed. Please check your EMAIL_USER and EMAIL_PASS in .env.');
+    console.error('If using Gmail, ensure you are using an "App Password" (not your regular password).');
+    console.error('Details:', error.message);
   } else {
     console.log('[EMAIL] Server is ready to take our messages');
   }

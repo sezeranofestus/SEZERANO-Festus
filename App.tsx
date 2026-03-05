@@ -363,7 +363,14 @@ Act as a powerful intelligent research engine that:
         const aiMsg: Message = { id: aiMsgId, role: 'assistant', content: '', type: 'text', timestamp: Date.now() };
         setSessions(prev => prev.map(s => s.id === currentId ? { ...s, messages: [...s.messages, aiMsg] } : s));
         
-        const history = (sessionsRef.current.find(s => s.id === currentId)?.messages || []).slice(0, -1).map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
+        // Improved history extraction with limit to avoid token overflow
+        const history = (sessionsRef.current.find(s => s.id === currentId)?.messages || [])
+          .slice(-10, -1) // Last 10 messages for context
+          .map(m => ({ 
+            role: m.role === 'assistant' ? 'model' : 'user', 
+            parts: [{ text: m.content }] 
+          }));
+
         let full = '';
         const streamer = streamChat(content, history, activeFeatures.search ? 'SEARCH' : 'CHAT', systemConfig);
         for await (const chunk of streamer) {
@@ -377,6 +384,13 @@ Act as a powerful intelligent research engine that:
     } finally { setIsTyping(false); }
   };
 
+  const handleClearChat = () => {
+    if (activeSessionId) {
+      setSessions(prev => prev.filter(s => s.id !== activeSessionId));
+      setActiveSessionId('');
+    }
+  };
+
   if (!isAppReady) return null;
   if (!user) return <AuthScreen onLogin={handleLogin} />;
 
@@ -386,7 +400,7 @@ Act as a powerful intelligent research engine that:
     <Router>
       <div className="flex h-screen w-full overflow-hidden bg-[#050505] text-white relative">
         <div className={`fixed lg:relative h-full z-[100] transition-all duration-300 ${sidebarOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:translate-x-0'} overflow-hidden shrink-0 border-r border-white/5 bg-[#0d0d0d]`}>
-          <Sidebar sessions={sessions} activeSessionId={activeSessionId} onSelectSession={(id) => { setActiveSessionId(id); setCurrentMode(AppMode.CHAT); if (isMobile) setSidebarOpen(false); }} onNewChat={handleNewChat} onLogout={handleLogout} isAdmin={user.isAdmin} onOpenAdmin={() => { setShowAdminDashboard(true); if (isMobile) setSidebarOpen(false); }} onOpenAdminProfile={() => { setShowAdminProfile(true); if (isMobile) setSidebarOpen(false); }} userName={user.name} onCloseMobile={() => setSidebarOpen(false)} />
+          <Sidebar sessions={sessions} activeSessionId={activeSessionId} onSelectSession={(id) => { setActiveSessionId(id); setCurrentMode(AppMode.CHAT); if (isMobile) setSidebarOpen(false); }} onNewChat={handleNewChat} onLogout={handleLogout} isAdmin={user.isAdmin} onOpenAdmin={() => { setShowAdminDashboard(true); if (isMobile) setSidebarOpen(false); }} onOpenAdminProfile={() => { setShowAdminProfile(true); if (isMobile) setSidebarOpen(false); }} userName={user.name} onCloseMobile={() => setSidebarOpen(false)} onClearChat={handleClearChat} />
         </div>
 
         <main className="flex-1 flex flex-col relative overflow-hidden bg-transparent w-full">

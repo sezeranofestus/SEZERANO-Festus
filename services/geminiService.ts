@@ -2,7 +2,18 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { SystemConfig } from "../types";
 
-const genAI = new GoogleGenAI({ apiKey: "AIzaSyBBvYLBmDtSpWBLNKyVlqtQLVmDq_xDQIw" });
+let genAIInstance: GoogleGenAI | null = null;
+
+export const getAI = () => {
+  if (!genAIInstance) {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY_MISSING: Please set VITE_GEMINI_API_KEY in your environment variables.");
+    }
+    genAIInstance = new GoogleGenAI({ apiKey });
+  }
+  return genAIInstance;
+};
 
 export const models = {
   flash: 'gemini-3-flash-preview',
@@ -57,7 +68,7 @@ export async function* streamChat(
   mode: string = 'CHAT', 
   systemConfig: SystemConfig
 ) {
-  const ai = genAI;
+  const ai = getAI();
   const modelToUse = systemConfig.globalModel === 'pro' ? models.pro : models.flash;
   const taskKey = `chat-${message.slice(0, 30)}`;
 
@@ -69,6 +80,8 @@ export async function* streamChat(
     - MEDIA: For songs, images, videos, or documents, follow the specific formatting rules provided in your system instructions.
     - STYLE: Professional, structured, and efficient. No unnecessary emojis.
     - INTEGRITY: Do not alter pre-built features. Respect system architecture.
+    - SAFETY: Never hallucinate data. If unsure, state it clearly.
+    - MEMORY: Use previous conversation context to provide relevant answers.
   `;
 
   const config: any = {
@@ -102,7 +115,7 @@ export async function generateImage(
   options: { aspectRatio?: "1:1" | "4:3" | "16:9" | "9:16", imageSize?: "1K" | "2K" | "4K", negativePrompt?: string } = {}
 ) {
   if (!prompt) throw new Error("Prompt required.");
-  const ai = genAI;
+  const ai = getAI();
   return callWithStability(`gen-${prompt.slice(0, 20)}`, async () => {
     const isPro = options.imageSize === "2K" || options.imageSize === "4K";
     const model = isPro ? models.proImage : models.image;
@@ -116,6 +129,8 @@ export async function generateImage(
     let finalPrompt = prompt;
     if (prompt.toLowerCase().includes('logo')) {
       finalPrompt = `PROFESSIONAL 4K LOGO: ${prompt}, minimalist vector style, clean sharp edges, premium professional typography, balanced composition, branding-ready identity, transparent background, high-end design aesthetics.`;
+    } else if (prompt.toLowerCase().includes('art') || prompt.toLowerCase().includes('style')) {
+      finalPrompt = `HIGH-DEFINITION ARTISTIC RENDER: ${prompt}, cinematic lighting, 8k resolution, hyper-realistic textures, masterpiece quality, detailed environment.`;
     }
 
     const fullPrompt = options.negativePrompt ? `${finalPrompt} [NEGATIVE: ${options.negativePrompt}]` : finalPrompt;
@@ -138,7 +153,7 @@ export async function proEditImage(
   instruction: string,
   parameters: any = {}
 ) {
-  const ai = genAI;
+  const ai = getAI();
   const taskKey = `pro-edit-${instruction.slice(0, 20)}`;
 
   const editingProtocol = `
@@ -177,7 +192,7 @@ export async function editImage(base64: string, mime: string, prompt: string, op
 }
 
 export async function analyzeImage(prompt: string, base64Image: string, mimeType: string, systemConfig: SystemConfig) {
-  const ai = genAI;
+  const ai = getAI();
   return callWithStability(`vision-${prompt.slice(0, 20)}`, async () => {
     const response = await ai.models.generateContent({
       model: models.flash,

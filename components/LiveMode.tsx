@@ -1,6 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { GoogleGenAI, Modality } from '@google/genai';
+import { Modality } from '@google/genai';
+import { getAI } from '../services/geminiService';
 import { decode, decodeAudioData, encode, float32ToInt16 } from '../services/audioService';
 import { ChatSession, SystemConfig } from '../types';
 
@@ -115,7 +116,7 @@ const LiveMode: React.FC<LiveModeProps> = ({ onClose, initialScreenShare = false
 
   const startSession = async () => {
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const ai = getAI();
       const inputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
       const outputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
       audioContextRef.current = inputCtx;

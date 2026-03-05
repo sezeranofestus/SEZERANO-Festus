@@ -8,6 +8,7 @@ interface SidebarProps {
   onSelectSession: (id: string) => void;
   onNewChat: (mode: AppMode, params?: { screenShare?: boolean; guidance?: boolean }) => void;
   onLogout: () => void;
+  onClearChat?: () => void;
   isAdmin?: boolean;
   onOpenAdmin?: () => void;
   onOpenAdminProfile?: () => void;
@@ -21,6 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSelectSession, 
   onNewChat,
   onLogout,
+  onClearChat,
   isAdmin,
   onOpenAdmin,
   onOpenAdminProfile,
@@ -30,6 +32,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = [
     { id: 'new', icon: 'fa-plus', label: 'New chat', action: () => onNewChat(AppMode.CHAT) },
   ];
+
+  if (onClearChat && activeSessionId) {
+    menuItems.push({ id: 'clear', icon: 'fa-trash-can', label: 'Clear chat', action: onClearChat });
+  }
 
   return (
     <div className="w-full h-full flex flex-col bg-[#0d0d0d] text-slate-300 font-medium overflow-hidden">
